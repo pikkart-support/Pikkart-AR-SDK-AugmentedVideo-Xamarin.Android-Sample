@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<color name="background">#FFFFFF</color>
+	    
+    <color name="primary">#ff7800</color>
+    <color name="primaryDark">#d76500</color>
+	  <color name="primaryFaded">#44ff7800</color>
+    <color name="secondary">#909090</color>
+    <color name="accent">#666666</color>
+
+    <color name="text_light">#FFFFFF</color>
+	  <color name="text_dark">#383838</color>
+	
+    <color name="tabs_bg">#e6e7e9</color>
+    <color name="tabs_text">#969799</color>
+
+    <color name="item_selected">#20930437</color>
+
+</resources>

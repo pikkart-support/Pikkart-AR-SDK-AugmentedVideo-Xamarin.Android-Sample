@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <style name="Theme.AppTheme" parent="Theme.AppCompat.Light.NoActionBar" >
+
+    <item name="colorPrimary">@color/primary</item>
+    <item name="colorPrimaryDark">@color/primaryDark</item>
+    <item name="colorAccent">@color/accent</item> <!-- BAR BELOW TABS -->
+
+	  <!--<item name="actionMenuTextColor">#FFFFFF</item>
+	  <item name="android:textColorPrimaryInverse">#FFFFFF</item>
+
+    <item name="windowActionModeOverlay">true</item>
+		
+    <item name="colorControlNormal">@color/text_dark</item>
+    <item name="colorControlActivated">@color/primary</item>
+    <item name="colorControlHighlight">@color/primary</item>
+    <item name="buttonStyle">@style/ButtonAppTheme</item>     
+    <item name="android:imageButtonStyle">@style/ImageButtonAppTheme</item>     
+
+    <item name="android:windowBackground">@color/background</item>
+    <item name="windowActionBarOverlay">true</item>
+    <item name="android:windowContentOverlay">@null</item>
+    <item name="android:textColor">@color/text_dark</item>
+	<item name="android:textColorPrimary">@color/text_dark</item>
+	<item name="android:textColorSecondary">@color/text_dark</item>
+
+    <item name="editTextStyle">@style/EditTextAppTheme</item>
+    <item name="editTextBackground">@drawable/abc_edit_text_material</item>
+    <item name="searchViewStyle">@style/SearchViewAppTheme</item>
+    <item name="spinnerStyle">@style/SpinnerAppTheme</item>
+    <item name="android:spinnerItemStyle">@style/SpinnerItemAppTheme</item>
+
+    <item name="autoCompleteTextViewStyle">@style/AutoCompleteTextViewAppTheme</item>
+	<item name="dropDownListViewStyle">@style/DropDownListViewAppTheme</item>
+    <item name="ratingBarStyle">@style/RatingBarAppTheme</item>-->
+  </style>
+
+  <style name="Theme.Toolbar" parent="Theme.AppTheme" >
+
+	<!--<item name="android:textColor">@color/text_dark</item>
+	<item name="android:textColorPrimary">@color/text_light</item>--> <!-- TOOLBAR TITLE -->
+	<!--<item name="android:textColorSecondary">@color/text_dark</item>
+		
+  	<item name="editTextColor">@color/text_dark</item>
+		
+
+  	<item name="colorPrimary">@color/text_dark</item>
+  	<item name="colorPrimaryDark">@color/text_dark</item>
+    <item name="colorAccent">@color/text_dark</item>
+
+  	<item name="colorControlNormal">@color/text_dark</item>
+    <item name="colorControlActivated">@color/text_dark</item>
+    <item name="colorControlHighlight">@color/text_dark</item>
+
+    <item name="autoCompleteTextViewStyle">@style/AutoCompleteTextViewToolbar</item>-->
+  </style>
+
+  <style name="Theme.Splash" parent="Theme.AppCompat.Light.NoActionBar">
+    <item name="colorPrimary">@color/primary</item>
+    <item name="colorPrimaryDark">@color/primary</item>
+    <item name="android:windowBackground">@drawable/splashscreen</item>
+    <item name="windowNoTitle">true</item>
+  </style>
+
+  <!--- ONLY USED FOR XAMARIN STUDIO AXML PREVIEW (Not working with AppCompat) -->
+  <style name="Theme.Preview" parent="android:Theme.Material" >
+		<item name="android:colorControlNormal">#c5c5c5</item>
+	    <item name="android:colorControlActivated">@color/primary</item>
+	    <item name="android:colorControlHighlight">@color/primary</item>
+	    
+    <!--<item name="android:buttonStyle">@style/ButtonAppTheme</item> 
+	    <item name="android:imageButtonStyle">@style/ImageButtonAppTheme</item>      
+	    <item name="android:textColor">@color/text_dark</item>
+
+	    <item name="android:windowBackground">@color/background</item>
+	    <item name="android:windowActionBarOverlay">true</item>
+	    <item name="android:windowContentOverlay">@null</item>
+
+	    <item name="android:editTextStyle">@style/EditTextAppTheme</item>
+	    <item name="android:editTextBackground">@drawable/abc_edit_text_material</item>
+	    <item name="android:spinnerStyle">@style/SpinnerAppTheme</item>-->
+	</style>
+ 
+</resources>
