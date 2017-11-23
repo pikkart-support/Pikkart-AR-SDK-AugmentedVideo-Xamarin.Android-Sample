@@ -161,12 +161,6 @@
   <ItemGroup>
     <AndroidResource Include="Resources\drawable-hdpi\splash.png" />
   </ItemGroup>
-  <ItemGroup>
-    <AndroidAsset Include="Assets\media\texture3.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidAsset Include="Assets\media\texturegray.png" />
-  </ItemGroup>
   <Import Project="..\PikkartSample\PikkartSample.projitems" Label="Shared" Condition="Exists('..\PikkartSample\PikkartSample.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

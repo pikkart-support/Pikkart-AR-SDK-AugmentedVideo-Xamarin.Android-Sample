@@ -128,6 +128,72 @@ namespace PikkartSample.Droid
             }
         }
 
+        public static ByteBuffer loadTexture(AssetManager assets, string fileName, int[] dims)
+        {
+            Stream inputStream = null;
+            try
+            {
+                inputStream = assets.Open(fileName, Access.Buffer);
+                //BufferedInputStream bufferedStream = new BufferedInputStream(inputStream);
+                Bitmap bitMap = BitmapFactory.DecodeStream(inputStream);
+
+                int[] data = new int[bitMap.Width * bitMap.Height];
+                bitMap.GetPixels(data, 0, bitMap.Width, 0, 0, bitMap.Width, bitMap.Height);
+                dims[0] = bitMap.Width;
+                dims[1] = bitMap.Height;
+
+                // convert from int array to byte RGBA array
+                int numPixels = bitMap.Width * bitMap.Height;
+                byte[] dataBytes = new byte[numPixels * 4];
+                for (int p = 0; p < numPixels; ++p)
+                {
+                    int colour = data[p];
+                    dataBytes[p * 4] = (byte)(colour >> 16); // R
+                    dataBytes[p * 4 + 1] = (byte)(colour >> 8); // G
+                    dataBytes[p * 4 + 2] = (byte)colour; // B
+                    dataBytes[p * 4 + 3] = (byte)(colour >> 24); // A
+                }
+                // put data into a direct memory byte buffer
+                ByteBuffer bb_data = ByteBuffer.AllocateDirect(dataBytes.Length).Order(ByteOrder.NativeOrder());
+                int rowSize = bitMap.Width * 4;
+                for (int r = 0; r < bitMap.Height; r++)
+                {
+                    bb_data.Put(dataBytes, rowSize * (bitMap.Height - 1 - r), rowSize);
+                }
+                bb_data.Rewind();
+                // cleans variables
+                dataBytes = null;
+                data = null;
+
+                return bb_data;
+            }
+            catch (Exception e)
+            {
+                //Log.e("RenderUtils", "loadTextureFromApk failed to load texture '" + fileName + "' from APK with error " + e.getMessage());
+                return null;
+            }
+        }
+
+        public static int loadTextureFromByteBuffer(ByteBuffer data, int width, int height)
+        {
+            try
+            {
+                int[] gl_textureID = new int[1];
+                GLES20.GlGenTextures(1, gl_textureID, 0);
+                GLES20.GlBindTexture(GLES20.GlTexture2d, gl_textureID[0]);
+                GLES20.GlTexParameterf(GLES20.GlTexture2d, GLES20.GlTextureMinFilter, GLES20.GlLinear);
+                GLES20.GlTexParameterf(GLES20.GlTexture2d, GLES20.GlTextureMagFilter, GLES20.GlLinear);
+                GLES20.GlTexImage2D(GLES20.GlTexture2d, 0, GLES20.GlRgba, width, height, 0, GLES20.GlRgba, GLES20.GlUnsignedByte, data);
+
+                return gl_textureID[0];
+            }
+            catch (Exception e)
+            {
+                //Log.e("RenderUtils", "loadTextureFromApk failed to load texture '" + fileName + "' from APK with error " + e.getMessage());
+                return -1;
+            }
+        }
+
         /**
          * \brief Load a texture from app assets and create related OpenGL structures.
          * @param assets app AssetManager.

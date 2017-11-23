@@ -13,6 +13,7 @@ using Javax.Microedition.Khronos.Opengles;
 using Com.Pikkart.AR.Recognition;
 using Javax.Microedition.Khronos.Egl;
 using Com.Pikkart.AR.Recognition.Items;
+using System.Threading.Tasks;
 
 namespace PikkartSample.Droid
 {
@@ -30,10 +31,13 @@ namespace PikkartSample.Droid
         private Mesh monkeyMesh = null;
         private VideoMesh videoMesh = null;
 
+        ProgressDialog progressDialog;
+
         /* Constructor. */
         public ARRenderer(Context con)
         {
             context = con;
+            progressDialog = new ProgressDialog(con);
         }
 
         /** Called when the surface is created or recreated. 
@@ -42,11 +46,35 @@ namespace PikkartSample.Droid
         {
             gl.GlClearColor(1.0f, 1.0f, 1.0f, 1.0f);
             //Here we create the 3D object and initialize textures, shaders, etc.
-            monkeyMesh = new Mesh();
-            monkeyMesh.InitMesh(context.Assets, "media/monkey.json", "media/texture.png");
 
+            monkeyMesh = new Mesh();
             videoMesh = new VideoMesh((Activity)context);
-            videoMesh.InitMesh(context.Assets, "media/pikkart_video.mp4", "media/pikkart_keyframe.png", 0, false, null);
+
+            Task.Run(async () =>
+            {
+                try
+                {
+                    ((Activity)context).RunOnUiThread(() =>
+                    {
+                        progressDialog = ProgressDialog.Show(context, "Loading textures", "The 3D and video template textures of this tutorial have not been loaded yet", true);
+                    });
+
+                    monkeyMesh.InitMesh(context.Assets, "media/monkey.json", "media/texture.png");
+
+                    videoMesh.InitMesh(context.Assets, "media/pikkart_video.mp4", "media/pikkart_keyframe.png", 0, false, null);
+
+                    if (progressDialog != null)
+                        progressDialog.Dismiss();
+                }
+                catch (System.OperationCanceledException ex)
+                {
+                    Console.WriteLine("init failed: {ex.Message}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            });
 
         }
 
@@ -206,7 +234,7 @@ namespace PikkartSample.Droid
             angleMatrix[8] = 0.0f; angleMatrix[9] = 0.0f; angleMatrix[10] = 1.0f; angleMatrix[11] = 0.0f;
             angleMatrix[12] = 0.0f; angleMatrix[13] = 0.0f; angleMatrix[14] = 0.0f; angleMatrix[15] = 1.0f;
 
-            float[] projectionMatrix =(float[]) RecognitionFragment.GetCurrentProjectionMatrix().Clone();
+            float[] projectionMatrix = (float[])RecognitionFragment.GetCurrentProjectionMatrix().Clone();
             projectionMatrix[5] = projectionMatrix[5] * (h / h1);
 
             float[] correctedProjection = new float[16];
@@ -243,8 +271,15 @@ namespace PikkartSample.Droid
                     float[] pMatrix = new float[16];
                     if (ComputeModelViewProjectionMatrix(mvMatrix, pMatrix))
                     {
-                        videoMesh.DrawMesh(mvMatrix, pMatrix);
-                        RenderUtils.CheckGLError("completed video mesh Render");
+                        if (videoMesh != null && videoMesh.MeshLoaded)
+                        {
+                            if (videoMesh.GLLoaded)
+                                videoMesh.DrawMesh(mvMatrix, pMatrix);
+                            else
+                                videoMesh.InitMeshGL();
+
+                            RenderUtils.CheckGLError("completed video mesh Render");
+                        }
                     }
                 }
                 else
@@ -252,14 +287,22 @@ namespace PikkartSample.Droid
                     float[] mvpMatrix = new float[16];
                     if (ComputeModelViewProjectionMatrix(mvpMatrix))
                     {
-                        monkeyMesh.DrawMesh(mvpMatrix);
-                        RenderUtils.CheckGLError("completed Monkey head Render");
+                        //draw our 3d mesh on top of the marker
+                        if (monkeyMesh != null && monkeyMesh.MeshLoaded)
+                        {
+                            if (monkeyMesh.GLLoaded)
+                                monkeyMesh.DrawMesh(mvpMatrix);
+                            else
+                                monkeyMesh.InitMeshGL();
+
+                            RenderUtils.CheckGLError("completed Monkey head Render");
+                        }
                     }
                 }
             }
             //if the video is still playing and we have lost tracking, we still draw the video, 
             //but in a fixed frontal position
-            if (!RecognitionFragment.IsTracking && videoMesh.IsPlaying())
+            if (!RecognitionFragment.IsTracking && videoMesh != null && videoMesh.IsPlaying())
             {
                 float[] mvMatrix = new float[16];
                 float[] pMatrix = new float[16];

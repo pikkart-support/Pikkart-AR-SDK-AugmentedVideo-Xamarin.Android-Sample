@@ -33,6 +33,20 @@ namespace PikkartSample.Droid
          */
         public String Name() { return mName; }
 
+        private bool _meshLoaded = false;
+        public bool MeshLoaded
+        {
+            get { return _meshLoaded; }
+        }
+        private bool _glLoaded = false;
+        public bool GLLoaded
+        {
+            get { return _glLoaded; }
+        }
+
+        private ByteBuffer texture;
+        private int[] textureDims = new int[2];
+
         private ByteBuffer mVertices_Buffer; /**< vertices data */
         private ByteBuffer mTexCoords_Buffer; /**< texture coordinates data */
         private ByteBuffer mVideoTexCoords_Buffer; /**< video texture coordinates data */
@@ -60,6 +74,16 @@ namespace PikkartSample.Droid
         private float videoAspectRatio = 1.0f; /**< aspect ratio of the video */
 
         private float[] mTexCoordTransformationMatrix = null; /**< trasnformation matrix for the video texture coords */
+
+        private ByteBuffer mIconBusyTextureByteBuffer;
+        private ByteBuffer mIconPlayTextureByteBuffer;
+        private ByteBuffer mIconErrorTextureByteBuffer;
+        private ByteBuffer mKeyframeTextureByteBuffer;
+
+        private int[] mIconBusyTextureDims = new int[2];
+        private int[] mIconPlayTextureDims = new int[2];
+        private int[] mIconErrorTextureDims = new int[2];
+        private int[] mKeyframeTextureDims = new int[2];
 
         /**
          * texture coordinates of the video
@@ -215,6 +239,9 @@ namespace PikkartSample.Droid
                                 bool autostart,
                                 PikkartVideoPlayer pikkartVideoPlayer)
         {
+
+            _glLoaded = false;
+
             GenerateMesh();
             if (pikkartVideoPlayer == null)
             {
@@ -227,16 +254,29 @@ namespace PikkartSample.Droid
                 mPikkartVideoPlayer = pikkartVideoPlayer;
             }
             mMovieUrl = movieUrl;
-            int[] dims = new int[2];
-            mKeyframeTexture_GL_ID = RenderUtils.loadTextureFromApk(am, keyframeUrl, dims);
-            keyframeAspectRatio = (float)dims[1] / (float)dims[0];
+            mKeyframeTextureByteBuffer = RenderUtils.loadTexture(am, keyframeUrl, mKeyframeTextureDims);
+            keyframeAspectRatio = (float)mKeyframeTextureDims[1] / (float)mKeyframeTextureDims[0];
 
             mSeekPosition = seekPosition;
             mAutostart = autostart;
 
-            mIconBusyTexture_GL_ID = RenderUtils.loadTextureFromApk(am, "media/busy.png");
-            mIconPlayTexture_GL_ID = RenderUtils.loadTextureFromApk(am, "media/play.png");
-            mIconErrorTexture_GL_ID = RenderUtils.loadTextureFromApk(am, "media/error.png");
+            mTexCoordTransformationMatrix = new float[16];
+
+
+            mIconBusyTextureByteBuffer = RenderUtils.loadTexture(am, "media/busy.png", mIconBusyTextureDims);
+            mIconPlayTextureByteBuffer = RenderUtils.loadTexture(am, "media/play.png", mIconPlayTextureDims);
+            mIconErrorTextureByteBuffer = RenderUtils.loadTexture(am, "media/error.png", mIconErrorTextureDims);
+            _meshLoaded = true;
+
+            return true;
+        }
+
+        public bool InitMeshGL()
+        {
+            mKeyframeTexture_GL_ID = RenderUtils.loadTextureFromByteBuffer(mKeyframeTextureByteBuffer, mKeyframeTextureDims[0], mKeyframeTextureDims[1]);
+            mIconBusyTexture_GL_ID = RenderUtils.loadTextureFromByteBuffer(mIconBusyTextureByteBuffer, mIconBusyTextureDims[0], mIconBusyTextureDims[1]);
+            mIconPlayTexture_GL_ID = RenderUtils.loadTextureFromByteBuffer(mIconPlayTextureByteBuffer, mIconPlayTextureDims[0], mIconPlayTextureDims[1]);
+            mIconErrorTexture_GL_ID = RenderUtils.loadTextureFromByteBuffer(mIconErrorTextureByteBuffer, mIconErrorTextureDims[0], mIconErrorTextureDims[1]);
 
             mKeyframe_Program_GL_ID = RenderUtils.createProgramFromShaderSrc(VERTEX_SHADER, KEYFRAME_FRAGMENT_SHADER);
             mVideo_Program_GL_ID = RenderUtils.createProgramFromShaderSrc(VERTEX_SHADER, VIDEO_FRAGMENT_SHADER);
@@ -253,8 +293,7 @@ namespace PikkartSample.Droid
                 mPikkartVideoPlayer.load(mMovieUrl, canFullscreen, mAutostart, mSeekPosition);
             }
 
-            mTexCoordTransformationMatrix = new float[16];
-
+            _glLoaded = true;
             return true;
         }
 
